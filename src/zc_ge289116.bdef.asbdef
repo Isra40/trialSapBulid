@@ -17,4 +17,16 @@ use etag
   use action Resume;
   use action Prepare;
 
+  // should be updatable via EML calls
+  // that are not using "in local mode"
+  field ( readonly )
+  OverallStatus,
+  SalesOrderStatus,
+  Salesorder,
+  TotalPrice,
+  BgpfStatus,
+  BgpgProcessName,
+  ManageSalesOrderUrl,
+  Notes;
+
 }
