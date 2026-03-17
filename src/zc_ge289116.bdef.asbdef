@@ -11,6 +11,9 @@ use etag
   use update;
   use delete;
 
+  // enable external use of event
+  use event statusUpdated;
+
   use action Edit;
   use action Activate;
   use action Discard;
