@@ -27,7 +27,8 @@
       side effects
       {
         event statusUpdated affects field ( TotalPrice, Notes, OverallStatus, SalesOrderStatus,
-        Salesorder, ManageSalesOrderUrl );
+        Salesorder, ManageSalesOrderUrl ),
+        permissions ( action Edit, update, delete );
       }
 
       //additional readonly field
@@ -41,8 +42,8 @@
       RequestedDeliveryDate;
 
       create;
-      update;
-      delete;
+      update ( features : instance );
+      delete ( features : instance );
 
       determination setStatusToNew on modify { create; }
       determination calculateOrderID on save { create; }
@@ -50,7 +51,7 @@
 
       draft action Activate optimized;
       draft action Discard;
-      draft action Edit;
+      draft action (features : instance ) Edit;
       draft action Resume;
       draft determine action Prepare
       {

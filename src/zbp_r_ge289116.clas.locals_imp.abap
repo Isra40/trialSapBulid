@@ -65,6 +65,8 @@ CLASS lhc_zr_ge289116 DEFINITION INHERITING FROM cl_abap_behavior_handler.
 
     METHODS validateRequestedDeliveryDate FOR VALIDATE ON SAVE
       IMPORTING keys FOR ShoppingCart~validateRequestedDeliveryDate.
+    METHODS get_instance_features FOR INSTANCE FEATURES
+      IMPORTING keys REQUEST requested_features FOR ShoppingCart RESULT result.
 ENDCLASS.
 
 
@@ -259,6 +261,8 @@ CLASS lhc_zr_ge289116 IMPLEMENTATION.
 
   METHOD validateRequestedDeliveryDate.
 
+
+
    "Check that the field is not initial and that the date entered in the field is in the future.
    "Do not use the outdated sy-datum statement
 
@@ -299,4 +303,29 @@ CLASS lhc_zr_ge289116 IMPLEMENTATION.
     ENDLOOP.
 
   ENDMETHOD.
+
+  METHOD get_instance_features.
+
+     " read relevant shopping cart instance data
+     READ ENTITIES OF ZR_GE289116 IN LOCAL MODE
+       ENTITY ShoppingCart
+         FIELDS ( OrderUuid OverallStatus )
+         WITH CORRESPONDING #( keys )
+       RESULT DATA(entities)
+       FAILED failed.
+
+     " evaluate the conditions, set the operation state, and set result parameter
+     result = VALUE #( FOR entity IN entities
+                     ( %tky                   = entity-%tky
+
+                       %features-%update      = COND #( WHEN entity-OverallStatus = zbp_r_GE289116=>order_state-released
+                                                        THEN if_abap_behv=>fc-o-disabled ELSE if_abap_behv=>fc-o-enabled   )
+                       %features-%delete      = COND #( WHEN entity-OverallStatus = zbp_r_GE289116=>order_state-released
+                                                        THEN if_abap_behv=>fc-o-disabled ELSE if_abap_behv=>fc-o-enabled )
+                       %action-Edit           = COND #( WHEN entity-OverallStatus = zbp_r_GE289116=>order_state-released
+                                                        THEN if_abap_behv=>fc-o-disabled ELSE if_abap_behv=>fc-o-enabled )
+                     ) ).
+
+  ENDMETHOD.
+
 ENDCLASS.
